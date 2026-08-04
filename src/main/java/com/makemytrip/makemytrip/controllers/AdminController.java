@@ -30,7 +30,22 @@ public class AdminController {
     }
     @PostMapping("/flight")
     public Flight addflight(@RequestBody Flight flight) {
-          return flightRepository.save(flight);
+
+        // Default Flight Status
+        flight.setStatus("ON_TIME");
+        flight.setDelayReason("No Delay");
+        flight.setDelayMinutes(0);
+
+        // Initially Estimated Time = Original Time
+        flight.setEstimatedDepartureTime(flight.getDepartureTime());
+        flight.setEstimatedArrivalTime(flight.getArrivalTime());
+
+        // Default Values
+        flight.setGate("A1");
+        flight.setTerminal("T1");
+        flight.setLastUpdated(java.time.LocalDateTime.now().toString());
+
+        return flightRepository.save(flight);
     }
      @PostMapping("/hotel")
     public Hotel addhotel(@RequestBody Hotel hotel) {
@@ -48,6 +63,14 @@ public class AdminController {
             flight.setArrivalTime(UpdatedFlight.getArrivalTime());
             flight.setPrice(UpdatedFlight.getPrice());
              flight.setAvailableSeats(UpdatedFlight.getAvailableSeats());
+            flight.setStatus(UpdatedFlight.getStatus());
+            flight.setDelayReason(UpdatedFlight.getDelayReason());
+            flight.setDelayMinutes(UpdatedFlight.getDelayMinutes());
+            flight.setEstimatedDepartureTime(UpdatedFlight.getEstimatedDepartureTime());
+            flight.setEstimatedArrivalTime(UpdatedFlight.getEstimatedArrivalTime());
+            flight.setGate(UpdatedFlight.getGate());
+            flight.setTerminal(UpdatedFlight.getTerminal());
+            flight.setLastUpdated(java.time.LocalDateTime.now().toString());
            flightRepository.save(flight);
             return ResponseEntity.ok(flight);
         }
@@ -68,6 +91,33 @@ public class AdminController {
         }
             return ResponseEntity.notFound().build();
         }
+    @PutMapping("/flight/{id}/status")
+    public ResponseEntity<Flight> updateFlightStatus(
+            @PathVariable String id,
+            @RequestBody Flight updatedFlight) {
+
+        Optional<Flight> optionalFlight = flightRepository.findById(id);
+
+        if (optionalFlight.isPresent()) {
+
+            Flight flight = optionalFlight.get();
+
+            flight.setStatus(updatedFlight.getStatus());
+            flight.setDelayReason(updatedFlight.getDelayReason());
+            flight.setDelayMinutes(updatedFlight.getDelayMinutes());
+            flight.setEstimatedDepartureTime(updatedFlight.getEstimatedDepartureTime());
+            flight.setEstimatedArrivalTime(updatedFlight.getEstimatedArrivalTime());
+            flight.setGate(updatedFlight.getGate());
+            flight.setTerminal(updatedFlight.getTerminal());
+            flight.setLastUpdated(java.time.LocalDateTime.now().toString());
+
+            flightRepository.save(flight);
+
+            return ResponseEntity.ok(flight);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
 
 }
 

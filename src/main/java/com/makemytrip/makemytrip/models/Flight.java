@@ -16,6 +16,15 @@ public class Flight {
     private double price;
     private int availableSeats;
 
+    private String status;
+    private String delayReason;
+    private int delayMinutes;
+    private String estimatedDepartureTime;
+    private String estimatedArrivalTime;
+    private String lastUpdated;
+    private String gate;
+    private String terminal;
+
     public String getId() {
         return _id;
     }
@@ -78,6 +87,70 @@ public class Flight {
 
     public void setAvailableSeats(int availableSeats) {
         this.availableSeats = availableSeats;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDelayReason() {
+        return delayReason;
+    }
+
+    public void setDelayReason(String delayReason) {
+        this.delayReason = delayReason;
+    }
+
+    public int getDelayMinutes() {
+        return delayMinutes;
+    }
+
+    public void setDelayMinutes(int delayMinutes) {
+        this.delayMinutes = delayMinutes;
+    }
+
+    public String getEstimatedDepartureTime() {
+        return estimatedDepartureTime;
+    }
+
+    public void setEstimatedDepartureTime(String estimatedDepartureTime) {
+        this.estimatedDepartureTime = estimatedDepartureTime;
+    }
+
+    public String getEstimatedArrivalTime() {
+        return estimatedArrivalTime;
+    }
+
+    public void setEstimatedArrivalTime(String estimatedArrivalTime) {
+        this.estimatedArrivalTime = estimatedArrivalTime;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getGate() {
+        return gate;
+    }
+
+    public void setGate(String gate) {
+        this.gate = gate;
+    }
+
+    public String getTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(String terminal) {
+        this.terminal = terminal;
     }
 
 }

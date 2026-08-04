@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.PathVariable;
+import com.makemytrip.makemytrip.services.MockFlightStatusService;
+import java.util.Optional;
 import java.util.List;
 
 
@@ -32,5 +34,36 @@ public class RootController {
     public ResponseEntity<List<Flight>> getallflights(){
         List<Flight> flights=flightRepository.findAll();
         return ResponseEntity.ok(flights);
+    }
+    @GetMapping("/flight/{id}/status")
+    public ResponseEntity<Flight> getFlightStatus(@PathVariable String id) {
+
+        Optional<Flight> flight = flightRepository.findById(id);
+
+        if (flight.isPresent()) {
+            return ResponseEntity.ok(flight.get());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+    @Autowired
+    private MockFlightStatusService mockFlightStatusService;
+    @GetMapping("/flight/{id}/live-status")
+    public ResponseEntity<Flight> getLiveFlightStatus(@PathVariable String id) {
+
+        Optional<Flight> optionalFlight = flightRepository.findById(id);
+
+        if (optionalFlight.isPresent()) {
+
+            Flight flight = optionalFlight.get();
+
+            flight = mockFlightStatusService.generateMockStatus(flight);
+
+            flightRepository.save(flight);
+
+            return ResponseEntity.ok(flight);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
