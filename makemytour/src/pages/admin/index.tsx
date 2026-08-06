@@ -27,6 +27,7 @@ import {
   addhotel,
   editflight,
   edithotel,
+  getTrackedFlights,
   getuserbyemail,
 } from "@/api";
 import HotelList from "@/components/Hotel/Hotel";
@@ -110,41 +111,41 @@ function UserSearch() {
   };
 
   return (
-      <div className="space-y-4">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <div className="flex-1">
-            <Label htmlFor="email" className="sr-only">
-              Email
-            </Label>
-            <Input
-                id="email"
-                type="email"
-                placeholder="Search user by email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
-          </div>
-          <Button type="submit">Search</Button>
-        </form>
-        {user && (
-            <div className="border p-4 rounded-md">
-              <h3 className="font-bold mb-2">User Details</h3>
-              <p>
-                <strong>Name:</strong> {user.firstname} {user.lastname}
-              </p>
-              <p>
-                <strong>Email:</strong> {user.email}
-              </p>
-              <p>
-                <strong>Role:</strong> {user.role}
-              </p>
-              <p>
-                <strong>Phone:</strong> {user.phoneNumber}
-              </p>
-            </div>
-        )}
-      </div>
+    <div className="space-y-4">
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <div className="flex-1">
+          <Label htmlFor="email" className="sr-only">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Search user by email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <Button type="submit">Search</Button>
+      </form>
+      {user && (
+        <div className="border p-4 rounded-md">
+          <h3 className="font-bold mb-2">User Details</h3>
+          <p>
+            <strong>Name:</strong> {user.firstname} {user.lastname}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Role:</strong> {user.role}
+          </p>
+          <p>
+            <strong>Phone:</strong> {user.phoneNumber}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -181,7 +182,7 @@ function AddEditHotel({ hotel }: { hotel: Hotel | null }) {
   }, [hotel]);
 
   const handleChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -191,21 +192,21 @@ function AddEditHotel({ hotel }: { hotel: Hotel | null }) {
     e.preventDefault();
     if (hotel) {
       await edithotel(
-          hotel.id,
-          formData.hotelName,
-          formData.location,
-          formData.pricePerNight,
-          formData.availableRooms,
-          formData.amenities
-      );
-      return;
-    }
-    await addhotel(
+        hotel.id,
         formData.hotelName,
         formData.location,
         formData.pricePerNight,
         formData.availableRooms,
-        formData.amenities
+        formData.amenities,
+      );
+      return;
+    }
+    await addhotel(
+      formData.hotelName,
+      formData.location,
+      formData.pricePerNight,
+      formData.availableRooms,
+      formData.amenities,
     );
     if (!hotel) {
       setFormData({
@@ -219,64 +220,64 @@ function AddEditHotel({ hotel }: { hotel: Hotel | null }) {
   };
 
   return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <h3 className="text-lg font-semibold mb-2">
-          {hotel ? "Edit Hotel" : "Add New Hotel"}
-        </h3>
-        <div>
-          <Label htmlFor="hotelName">Hotel Name</Label>
-          <Input
-              id="hotelName"
-              name="hotelName"
-              value={formData.hotelName}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="location">Location</Label>
-          <Input
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="pricePerNight">Price Per Night</Label>
-          <Input
-              id="pricePerNight"
-              name="pricePerNight"
-              type="number"
-              value={formData.pricePerNight}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="availableRooms">Available Rooms</Label>
-          <Input
-              id="availableRooms"
-              name="availableRooms"
-              type="number"
-              value={formData.availableRooms}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="amenities">Amenities</Label>
-          <Textarea
-              id="amenities"
-              name="amenities"
-              value={formData.amenities}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <Button type="submit">{hotel ? "Update Hotel" : "Add Hotel"}</Button>
-      </form>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <h3 className="text-lg font-semibold mb-2">
+        {hotel ? "Edit Hotel" : "Add New Hotel"}
+      </h3>
+      <div>
+        <Label htmlFor="hotelName">Hotel Name</Label>
+        <Input
+          id="hotelName"
+          name="hotelName"
+          value={formData.hotelName}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="location">Location</Label>
+        <Input
+          id="location"
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="pricePerNight">Price Per Night</Label>
+        <Input
+          id="pricePerNight"
+          name="pricePerNight"
+          type="number"
+          value={formData.pricePerNight}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="availableRooms">Available Rooms</Label>
+        <Input
+          id="availableRooms"
+          name="availableRooms"
+          type="number"
+          value={formData.availableRooms}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="amenities">Amenities</Label>
+        <Textarea
+          id="amenities"
+          name="amenities"
+          value={formData.amenities}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <Button type="submit">{hotel ? "Update Hotel" : "Add Hotel"}</Button>
+    </form>
   );
 }
 
@@ -329,25 +330,25 @@ function AddEditFlight({ flight }: { flight: Flight | null }) {
     console.log("Submitting flight data:", formData);
     if (flight) {
       await editflight(
-          flight?.id,
-          formData.flightName,
-          formData.from,
-          formData.to,
-          formData.departureTime,
-          formData.arrivalTime,
-          formData.price,
-          formData.availableSeats
-      );
-      return;
-    }
-    await addflight(
+        flight?.id,
         formData.flightName,
         formData.from,
         formData.to,
         formData.departureTime,
         formData.arrivalTime,
         formData.price,
-        formData.availableSeats
+        formData.availableSeats,
+      );
+      return;
+    }
+    await addflight(
+      formData.flightName,
+      formData.from,
+      formData.to,
+      formData.departureTime,
+      formData.arrivalTime,
+      formData.price,
+      formData.availableSeats,
     );
     if (!flight) {
       setFormData({
@@ -363,86 +364,86 @@ function AddEditFlight({ flight }: { flight: Flight | null }) {
   };
 
   return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <h3 className="text-lg font-semibold mb-2">
-          {flight ? "Edit Flight" : "Add New Flight"}
-        </h3>
-        <div>
-          <Label htmlFor="flightName">Flight Name</Label>
-          <Input
-              id="flightName"
-              name="flightName"
-              value={formData.flightName}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="from">From</Label>
-          <Input
-              id="from"
-              name="from"
-              value={formData.from}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="to">To</Label>
-          <Input
-              id="to"
-              name="to"
-              value={formData.to}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="departureTime">Departure Time</Label>
-          <Input
-              id="departureTime"
-              name="departureTime"
-              type="datetime-local"
-              value={formData.departureTime}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="arrivalTime">Arrival Time</Label>
-          <Input
-              id="arrivalTime"
-              name="arrivalTime"
-              type="datetime-local"
-              value={formData.arrivalTime}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="price">Price</Label>
-          <Input
-              id="price"
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <div>
-          <Label htmlFor="availableSeats">Available Seats</Label>
-          <Input
-              id="availableSeats"
-              name="availableSeats"
-              type="number"
-              value={formData.availableSeats}
-              onChange={handleChange}
-              required
-          />
-        </div>
-        <Button type="submit">{flight ? "Update Flight" : "Add Flight"}</Button>
-      </form>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <h3 className="text-lg font-semibold mb-2">
+        {flight ? "Edit Flight" : "Add New Flight"}
+      </h3>
+      <div>
+        <Label htmlFor="flightName">Flight Name</Label>
+        <Input
+          id="flightName"
+          name="flightName"
+          value={formData.flightName}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="from">From</Label>
+        <Input
+          id="from"
+          name="from"
+          value={formData.from}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="to">To</Label>
+        <Input
+          id="to"
+          name="to"
+          value={formData.to}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="departureTime">Departure Time</Label>
+        <Input
+          id="departureTime"
+          name="departureTime"
+          type="datetime-local"
+          value={formData.departureTime}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="arrivalTime">Arrival Time</Label>
+        <Input
+          id="arrivalTime"
+          name="arrivalTime"
+          type="datetime-local"
+          value={formData.arrivalTime}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="price">Price</Label>
+        <Input
+          id="price"
+          name="price"
+          type="number"
+          value={formData.price}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="availableSeats">Available Seats</Label>
+        <Input
+          id="availableSeats"
+          name="availableSeats"
+          type="number"
+          value={formData.availableSeats}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <Button type="submit">{flight ? "Update Flight" : "Add Flight"}</Button>
+    </form>
   );
 }
 
@@ -450,60 +451,97 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("flights");
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [selectedHotel, setSelectedHotel] = useState(null);
+  const [trackedFlights, setTrackedFlights] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTrackedFlights = async () => {
+      try {
+        const data = await getTrackedFlights();
+        setTrackedFlights(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchTrackedFlights();
+  }, []);
 
   return (
-      <div className="container mx-auto p-4 bg-white max-w-full">
-        <h1 className="text-3xl font-bold mb-6 ">Admin Dashboard</h1>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3  text-black">
-            <TabsTrigger value="flights">Flights</TabsTrigger>
-            <TabsTrigger value="hotels">Hotels</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-          </TabsList>
-          <TabsContent value="flights">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manage Flights</CardTitle>
-                <CardDescription>
-                  Add, edit, or remove flights from the system.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <FlightList onSelect={setSelectedFlight} />
-                  <AddEditFlight flight={selectedFlight} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="hotels">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manage Hotels</CardTitle>
-                <CardDescription>
-                  Add, edit, or remove hotels from the system.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <HotelList onSelect={setSelectedHotel} />
-                  <AddEditHotel hotel={selectedHotel} />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Search for users by email.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <UserSearch />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+    <div className="container mx-auto p-4 bg-white max-w-full">
+      <h1 className="text-3xl font-bold mb-6 ">Admin Dashboard</h1>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3  text-black">
+          <TabsTrigger value="flights">Flights</TabsTrigger>
+          <TabsTrigger value="hotels">Hotels</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+        </TabsList>
+        <TabsContent value="flights">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Flights</CardTitle>
+              <CardDescription>
+                Add, edit, or remove flights from the system.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <FlightList onSelect={setSelectedFlight} />
+                <AddEditFlight flight={selectedFlight} />
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold mb-4">Tracked Flights</h2>
+
+                {trackedFlights.length === 0 ? (
+                  <p>No tracked flights available.</p>
+                ) : (
+                  trackedFlights.map((flight: any) => (
+                    <div
+                      key={flight.id}
+                      className="border rounded-lg p-4 mb-3 shadow"
+                    >
+                      <h3 className="font-semibold">{flight.flightName}</h3>
+                      <p>
+                        {flight.from} → {flight.to}
+                      </p>
+                      <p>Status: {flight.status}</p>
+                      <p>Delay: {flight.delayMinutes} min</p>
+                      <p>Reason: {flight.delayReason}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="hotels">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Hotels</CardTitle>
+              <CardDescription>
+                Add, edit, or remove hotels from the system.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <HotelList onSelect={setSelectedHotel} />
+                <AddEditHotel hotel={selectedHotel} />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>Search for users by email.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UserSearch />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

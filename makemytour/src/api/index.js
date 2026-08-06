@@ -199,3 +199,21 @@ export const handlehotelbooking = async (userId, hotelId, rooms, price) => {
     console.log(error);
   }
 };
+
+export const trackFlight = async (id) => {
+  try {
+    const res = await axios.put(`${BACKEND_URL}/flight/${id}/track`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTrackedFlights = async () => {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/flight/tracked`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
