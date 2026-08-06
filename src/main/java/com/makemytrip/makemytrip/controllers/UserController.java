@@ -7,7 +7,7 @@ import com.makemytrip.makemytrip.services.UserServices;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "https://make-my-trip-clone-springboot-5-nyg9.onrender.com")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     @Autowired
     private UserServices userServices;

@@ -2,12 +2,17 @@ package com.makemytrip.makemytrip.services;
 
 import com.makemytrip.makemytrip.models.Flight;
 import org.springframework.stereotype.Service;
-
+import com.makemytrip.makemytrip.repositories.FlightRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
 public class MockFlightStatusService {
+    @Autowired
+    private FlightRepository flightRepository;
 
     private final Random random = new Random();
 
@@ -74,6 +79,20 @@ public class MockFlightStatusService {
         flight.setLastUpdated(LocalDateTime.now().toString());
 
         return flight;
+    }
+    @Scheduled(fixedRate = 30000) // Every 30 seconds
+    public void updateAllFlightStatus() {
+
+        List<Flight> flights = flightRepository.findAll();
+
+        for (Flight flight : flights) {
+
+            generateMockStatus(flight);
+
+            flightRepository.save(flight);
+        }
+
+        System.out.println("Flight status updated for all flights at: " + LocalDateTime.now());
     }
 
 }

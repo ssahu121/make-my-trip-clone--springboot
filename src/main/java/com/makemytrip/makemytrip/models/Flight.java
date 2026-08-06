@@ -15,6 +15,7 @@ public class Flight {
     private String arrivalTime;
     private double price;
     private int availableSeats;
+    private boolean tracked = false;
 
     private String status;
     private String delayReason;
@@ -151,6 +152,13 @@ public class Flight {
 
     public void setTerminal(String terminal) {
         this.terminal = terminal;
+    }
+    public boolean isTracked() {
+        return tracked;
+    }
+
+    public void setTracked(boolean tracked) {
+        this.tracked = tracked;
     }
 
 }
