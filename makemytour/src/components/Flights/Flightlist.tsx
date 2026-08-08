@@ -7,13 +7,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getflight, trackFlight } from "@/api";
 import Loader from "../Loader";
+import { toast } from "sonner";
 
 const FlightList = ({ onSelect }: any) => {
   const [flight, setflight] = useState<any[]>([]);
   const [loading, setloading] = useState(true);
+
+  const previousStatus = useRef<Record<string, string>>({});
 
   // Track Flight
   const handleTrack = async (id: string) => {
@@ -23,9 +26,10 @@ const FlightList = ({ onSelect }: any) => {
       const data = await getflight();
       setflight(data);
 
-      alert("Flight tracked successfully");
+      toast.success("Flight tracked successfully");
     } catch (error) {
       console.error(error);
+      toast.error("Failed to track flight");
     }
   };
 
@@ -34,15 +38,49 @@ const FlightList = ({ onSelect }: any) => {
     const fetchflight = async () => {
       try {
         const data = await getflight();
+
         setflight(data);
+
+        data.forEach((f: any) => {
+          if (!f.tracked) return;
+
+          if (previousStatus.current[f.id] !== f.status) {
+            previousStatus.current[f.id] = f.status;
+
+            switch (f.status) {
+              case "DELAYED":
+                toast.error(f.notification);
+                break;
+
+              case "BOARDING":
+                toast.info(f.notification);
+                break;
+
+              case "LANDED":
+                toast.success(f.notification);
+                break;
+
+              case "DEPARTED":
+                toast.success(f.notification);
+                break;
+
+              default:
+                toast(f.notification);
+            }
+          }
+        });
       } catch (error) {
-        console.error("Error fetching flights:", error);
+        console.log(error);
       } finally {
         setloading(false);
       }
     };
 
     fetchflight();
+
+    const interval = setInterval(fetchflight, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -74,9 +112,7 @@ const FlightList = ({ onSelect }: any) => {
                 <TableCell>₹{flight.price}</TableCell>
 
                 <TableCell className="flex gap-2">
-                  <Button onClick={() => onSelect(flight)}>
-                    Edit
-                  </Button>
+                  <Button onClick={() => onSelect(flight)}>Edit</Button>
 
                   <Button
                     onClick={() => handleTrack(flight.id)}

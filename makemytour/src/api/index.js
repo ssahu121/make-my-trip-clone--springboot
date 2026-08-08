@@ -217,3 +217,29 @@ export const getTrackedFlights = async () => {
     throw error;
   }
 };
+
+export const getPriceHistory = async (id) => {
+  try {
+    const response = await axios.get(
+      `${BACKEND_URL}/flight/${id}/price-history`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching price history:", error);
+    throw error;
+  }
+};
+
+export const freezePrice = async (flightId, minutes = 15) => {
+  try {
+    const response = await axios.post(
+      `${BACKEND_URL}/flight/${flightId}/price-freeze?minutes=${minutes}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error freezing price:", error);
+    throw error;
+  }
+};

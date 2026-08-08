@@ -8,6 +8,7 @@ import { Plane } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useEffect } from "react";
 import Footer from "@/components/ui/Footer";
+import { Toaster } from "sonner";
 
 const Myapp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
@@ -27,11 +28,17 @@ const Myapp = ({ Component, pageProps }: AppProps) => {
 export default function App( props : AppProps) {
   return (
     <Provider store={store}>
-      <Head>
-        <title>MakeMyTour</title>
-      </Head>
-        <Myapp{...props} />
-      
-    </Provider>
+  <Head>
+    <title>MakeMyTour</title>
+  </Head>
+
+  <Myapp {...props} />
+
+  <Toaster
+    position="top-right"
+    richColors
+    duration={3000}
+  />
+</Provider>
   );
 }

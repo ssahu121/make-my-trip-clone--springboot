@@ -62,6 +62,11 @@ public class MockFlightStatusService {
                     arrival.plusMinutes(delay).toString()
             );
 
+            flight.setNotification(
+                    "Flight " + flight.getFlightName() +
+                            " delayed by " + delay +
+                            " minutes due to " + flight.getDelayReason()
+            );
         } else {
 
             flight.setDelayMinutes(0);
@@ -74,6 +79,31 @@ public class MockFlightStatusService {
             flight.setEstimatedArrivalTime(
                     flight.getArrivalTime()
             );
+            switch (status) {
+
+                case "BOARDING":
+                    flight.setNotification(
+                            "Flight " + flight.getFlightName() + " is now BOARDING"
+                    );
+                    break;
+
+                case "DEPARTED":
+                    flight.setNotification(
+                            "Flight " + flight.getFlightName() + " has DEPARTED"
+                    );
+                    break;
+
+                case "LANDED":
+                    flight.setNotification(
+                            "Flight " + flight.getFlightName() + " has LANDED"
+                    );
+                    break;
+
+                default:
+                    flight.setNotification(
+                            "Flight " + flight.getFlightName() + " is ON TIME"
+                    );
+            }
         }
 
         flight.setLastUpdated(LocalDateTime.now().toString());
@@ -87,7 +117,7 @@ public class MockFlightStatusService {
 
         for (Flight flight : flights) {
 
-            generateMockStatus(flight);
+            flight = generateMockStatus(flight);
 
             flightRepository.save(flight);
         }

@@ -22,6 +22,7 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import FlightList from "@/components/Flights/Flightlist";
+import PriceHistory from "@/components/Flights/PriceHistory";
 import {
   addflight,
   addhotel,
@@ -449,7 +450,7 @@ function AddEditFlight({ flight }: { flight: Flight | null }) {
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("flights");
-  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selectedFlight, setSelectedFlight] = useState<any>(null);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [trackedFlights, setTrackedFlights] = useState<any[]>([]);
 
@@ -488,6 +489,7 @@ export default function AdminDashboard() {
                 <FlightList onSelect={setSelectedFlight} />
                 <AddEditFlight flight={selectedFlight} />
               </div>
+              {selectedFlight && <PriceHistory flightId={selectedFlight.id} />}
 
               <div className="mt-8">
                 <h2 className="text-2xl font-bold mb-4">Tracked Flights</h2>

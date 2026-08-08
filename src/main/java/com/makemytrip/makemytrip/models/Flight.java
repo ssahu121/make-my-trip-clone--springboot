@@ -15,7 +15,14 @@ public class Flight {
     private String arrivalTime;
     private double price;
     private int availableSeats;
+
+    private double basePrice;
+    private String demandLevel;
+    private String season;
+    private String priceLastUpdated;
+
     private boolean tracked = false;
+    private String notification;
 
     private String status;
     private String delayReason;
@@ -160,5 +167,43 @@ public class Flight {
     public void setTracked(boolean tracked) {
         this.tracked = tracked;
     }
+    public String getNotification() {
+        return notification;
+    }
+    public void setNotification(String notification) {
+        this.notification = notification;
+    }
+    
+    public double getBasePrice() {
+    return basePrice;
+}
+
+public void setBasePrice(double basePrice) {
+    this.basePrice = basePrice;
+}
+
+public String getDemandLevel() {
+    return demandLevel;
+}
+
+public void setDemandLevel(String demandLevel) {
+    this.demandLevel = demandLevel;
+}
+
+public String getSeason() {
+    return season;
+}
+
+public void setSeason(String season) {
+    this.season = season;
+}
+
+public String getPriceLastUpdated() {
+    return priceLastUpdated;
+}
+
+public void setPriceLastUpdated(String priceLastUpdated) {
+    this.priceLastUpdated = priceLastUpdated;
+}
 
 }
