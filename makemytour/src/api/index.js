@@ -61,6 +61,30 @@ export const editprofile = async (
     return data;
   } catch (error) {}
 };
+export const cancelBooking = async (
+  userId,
+  bookingId,
+  reason,
+) => {
+  try {
+    const res = await axios.put(
+      `${BACKEND_URL}/booking/cancel`,
+      null,
+     {
+        params: {
+          userId: userId,
+          bookingId: bookingId,
+          reason: reason,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Cancel booking error:", error);
+    throw error;
+  }
+};
 
 export const getflight = async () => {
   try {

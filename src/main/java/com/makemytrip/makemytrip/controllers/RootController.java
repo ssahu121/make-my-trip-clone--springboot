@@ -17,7 +17,10 @@ import com.makemytrip.makemytrip.services.PriceFreezeService;
 
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        allowCredentials = "true"
+)
 public class RootController {
     @Autowired
     private HotelRepository hotelRepository;
@@ -39,9 +42,23 @@ public class RootController {
         return ResponseEntity.ok(hotels);
     }
     @GetMapping("/flight")
-    public ResponseEntity<List<Flight>> getallflights(){
-        List<Flight> flights=flightRepository.findAll();
-        return ResponseEntity.ok(flights);
+    public ResponseEntity<?> getallflights() {
+
+        try {
+
+            List<Flight> flights =
+                    flightRepository.findAll();
+
+            return ResponseEntity.ok(flights);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body("Error fetching flights: " + e.getMessage());
+        }
     }
     @GetMapping("/flight/{id}/status")
     public ResponseEntity<Flight> getFlightStatus(@PathVariable String id) {
@@ -73,20 +90,36 @@ public class RootController {
         return ResponseEntity.notFound().build();
     }
     @GetMapping("/flight/tracked")
-    public ResponseEntity<List<Flight>> getTrackedFlights() {
+    public ResponseEntity<?> getTrackedFlights() {
 
-        List<Flight> flights = flightRepository.findAll();
+        try {
 
-        List<Flight> trackedFlights = new java.util.ArrayList<>();
+            List<Flight> flights =
+                    flightRepository.findAll();
 
-        for (Flight flight : flights) {
+            List<Flight> trackedFlights =
+                    new java.util.ArrayList<>();
 
-            if (flight.isTracked()) {
-                trackedFlights.add(flight);
+            for (Flight flight : flights) {
+
+                if (flight != null && flight.isTracked()) {
+                    trackedFlights.add(flight);
+                }
             }
-        }
 
-        return ResponseEntity.ok(trackedFlights);
+            return ResponseEntity.ok(trackedFlights);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(
+                            "Error fetching tracked flights: "
+                                    + e.getMessage()
+                    );
+        }
     }
     @Autowired
     private MockFlightStatusService mockFlightStatusService;

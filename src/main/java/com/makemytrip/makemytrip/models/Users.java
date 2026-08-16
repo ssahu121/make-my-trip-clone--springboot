@@ -90,6 +90,13 @@ public class Users {
         private String date;
         private int quantity;
         private double totalPrice;
+        private String bookingStatus = "CONFIRMED";
+        private String cancellationReason;
+        private double refundAmount;
+        private String refundStatus;
+        private String refundExpectedDate;
+        private String cancelledAt;
+        private String bookingTime;
 
         // Getters and Setters
         public String getType() {
@@ -130,6 +137,62 @@ public class Users {
 
         public void setTotalPrice(double totalPrice) {
             this.totalPrice = totalPrice;
+        }
+
+        public String getBookingStatus() {
+            return bookingStatus;
+        }
+
+        public void setBookingStatus(String bookingStatus) {
+            this.bookingStatus = bookingStatus;
+        }
+
+        public String getCancellationReason() {
+            return cancellationReason;
+        }
+
+        public void setCancellationReason(String cancellationReason) {
+            this.cancellationReason = cancellationReason;
+        }
+
+        public double getRefundAmount() {
+            return refundAmount;
+        }
+
+        public void setRefundAmount(double refundAmount) {
+            this.refundAmount = refundAmount;
+        }
+
+        public String getRefundStatus() {
+            return refundStatus;
+        }
+
+        public void setRefundStatus(String refundStatus) {
+            this.refundStatus = refundStatus;
+        }
+
+        public String getRefundExpectedDate() {
+            return refundExpectedDate;
+        }
+
+        public void setRefundExpectedDate(String refundExpectedDate) {
+            this.refundExpectedDate = refundExpectedDate;
+        }
+
+        public String getCancelledAt() {
+            return cancelledAt;
+        }
+
+        public void setCancelledAt(String cancelledAt) {
+            this.cancelledAt = cancelledAt;
+        }
+
+        public String getBookingTime() {
+            return bookingTime;
+        }
+
+        public void setBookingTime(String bookingTime) {
+            this.bookingTime = bookingTime;
         }
 
     }

@@ -186,6 +186,7 @@ const BookFlightPage = () => {
       console.log(error);
     }
   };
+  
   const BookingContent = () => (
       <DialogContent className="sm:max-w-[600px] bg-white">
         <DialogHeader>

@@ -11,16 +11,37 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
+
         http
-                .csrf(csrf -> csrf.disable()) // disable for Postman testing
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // allow everything
+                        .requestMatchers(
+                                "/",
+                                "/flight",
+                                "/flight/**",
+                                "/hotel",
+
+                                // USER LOGIN / SIGNUP
+                                "/user/login",
+                                "/user/signup",
+
+                                // ADMIN APIs / LOGIN
+                                "/admin/**",
+
+                                // BOOKING
+                                "/booking/**"
+                        ).permitAll()
+
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
