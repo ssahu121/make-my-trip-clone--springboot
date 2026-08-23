@@ -86,6 +86,31 @@ export const cancelBooking = async (
   }
 };
 
+export const updateRefundStatus = async (
+  userId,
+  bookingId,
+  status
+) => {
+  try {
+    const res = await axios.put(
+      `${BACKEND_URL}/booking/refund-status`,
+      null,
+      {
+        params: {
+          userId: userId,
+          bookingId: bookingId,
+          status: status,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Refund status update error:", error);
+    throw error;
+  }
+};
+
 export const getflight = async () => {
   try {
     const res = await axios.get(`${BACKEND_URL}/flight`);

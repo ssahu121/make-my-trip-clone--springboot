@@ -424,4 +424,54 @@ public class BookingService {
                 "Booking not found: " + bookingId
         );
     }
+    public Booking updateRefundStatus(
+            String userId,
+            String bookingId,
+            String status) {
+
+        Optional<Users> userOptional =
+                userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            return null;
+        }
+
+        Users user = userOptional.get();
+
+        if (user.getBookings() == null) {
+            return null;
+        }
+
+        for (Booking booking : user.getBookings()) {
+
+            if (booking == null) {
+                continue;
+            }
+
+            if (booking.getBookingId() == null) {
+                continue;
+            }
+
+            if (!booking.getBookingId().equals(bookingId)) {
+                continue;
+            }
+
+            if (!"PENDING".equals(status)
+                    && !"PROCESSED".equals(status)
+                    && !"COMPLETED".equals(status)) {
+
+                throw new RuntimeException(
+                        "Invalid refund status"
+                );
+            }
+
+            booking.setRefundStatus(status);
+
+            userRepository.save(user);
+
+            return booking;
+        }
+
+        return null;
+    }
 }

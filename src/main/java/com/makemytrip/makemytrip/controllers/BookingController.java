@@ -87,4 +87,25 @@ public class BookingController {
 
         return ResponseEntity.ok(booking);
     }
+    // =========================
+    // Update Refund Status
+    // =========================
+    @PutMapping("/refund-status")
+    public ResponseEntity<Users.Booking> updateRefundStatus(
+            @RequestParam String userId,
+            @RequestParam String bookingId,
+            @RequestParam String status) {
+
+        Users.Booking booking = bookingService.updateRefundStatus(
+                userId,
+                bookingId,
+                status
+        );
+
+        if (booking == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(booking);
+    }
 }
