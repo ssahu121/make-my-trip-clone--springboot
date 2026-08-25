@@ -16,7 +16,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { clearUser, setUser } from "@/store";
-import { editprofile, cancelBooking } from "@/api";
+import {
+  editprofile,
+  cancelBooking,
+  updateRefundStatus,
+} from "@/api";
 const index = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);

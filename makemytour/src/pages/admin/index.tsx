@@ -30,6 +30,7 @@ import {
   edithotel,
   getTrackedFlights,
   getuserbyemail,
+  updateRefundStatus,
 } from "@/api";
 import HotelList from "@/components/Hotel/Hotel";
 const mockFlights = [
@@ -92,7 +93,10 @@ const mockHotels = [
   },
 ];
 interface User {
-  _id: string;
+  bookings: any[];
+  _id?: string;
+  id?: string;
+  userId?: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -104,12 +108,19 @@ function UserSearch() {
   const [email, setEmail] = useState("");
   const [user, setUser] = useState<User | null>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const data = await getuserbyemail(email);
-    const mockUser: User = data;
-    setUser(mockUser);
-  };
+const handleSearch = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const data = await getuserbyemail(email);
+
+  console.log("FULL USER DATA:", data);
+
+  const mockUser: User = data;
+
+  console.log("USER _id:", mockUser._id);
+
+  setUser(mockUser);
+};
 
   return (
     <div className="space-y-4">
@@ -144,6 +155,97 @@ function UserSearch() {
           <p>
             <strong>Phone:</strong> {user.phoneNumber}
           </p>
+          {user.bookings && user.bookings.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-bold mb-2">Bookings</h3>
+
+              <div className="space-y-3">
+                {user.bookings.map((booking: any, index: number) => (
+                  <div
+                    key={booking.bookingId || index}
+                    className="border rounded-md p-3"
+                  >
+                    <p>
+                      <strong>Booking ID:</strong> {booking.bookingId}
+                    </p>
+
+                    <p>
+                      <strong>Type:</strong> {booking.type}
+                    </p>
+
+                    <p>
+                      <strong>Total Price:</strong> ₹{booking.totalPrice}
+                    </p>
+
+                    <p>
+                      <strong>Booking Status:</strong> {booking.bookingStatus}
+                    </p>
+
+                    <p>
+                      <strong>Refund Amount:</strong> ₹
+                      {booking.refundAmount || 0}
+                    </p>
+
+                    <p>
+                      <strong>Refund Status:</strong>{" "}
+                      {booking.refundStatus || "PENDING"}
+                    </p>
+
+                    <p>
+                      <strong>Expected Refund:</strong>{" "}
+                      {booking.refundExpectedDate || "N/A"}
+                    </p>
+
+                    {booking.bookingStatus === "CANCELLED" && (
+                      <div className="flex gap-2 mt-3">
+                        {booking.refundStatus === "PENDING" && (
+                          <Button
+                            onClick={async () => {
+                              try {
+                                await updateRefundStatus(
+                                  user._id,
+                                  booking.bookingId,
+                                  "PROCESSED",
+                                );
+
+                                alert("Refund status updated to PROCESSED");
+                              } catch (error) {
+                                console.error(error);
+                                alert("Failed to update refund status");
+                              }
+                            }}
+                          >
+                            Mark as Processed
+                          </Button>
+                        )}
+
+                        {booking.refundStatus === "PROCESSED" && (
+                          <Button
+                            onClick={async () => {
+                              try {
+                                await updateRefundStatus(
+                                  user._id,
+                                  booking.bookingId,
+                                  "COMPLETED",
+                                );
+
+                                alert("Refund status updated to COMPLETED");
+                              } catch (error) {
+                                console.error(error);
+                                alert("Failed to update refund status");
+                              }
+                            }}
+                          >
+                            Mark as Completed
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -471,10 +573,11 @@ export default function AdminDashboard() {
     <div className="container mx-auto p-4 bg-white max-w-full">
       <h1 className="text-3xl font-bold mb-6 ">Admin Dashboard</h1>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3  text-black">
+        <TabsList className="grid w-full grid-cols-4 text-black">
           <TabsTrigger value="flights">Flights</TabsTrigger>
           <TabsTrigger value="hotels">Hotels</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="refunds">Refunds</TabsTrigger>
         </TabsList>
         <TabsContent value="flights">
           <Card>
@@ -540,6 +643,22 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <UserSearch />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="refunds">
+          <Card>
+            <CardHeader>
+              <CardTitle>Refund Management</CardTitle>
+              <CardDescription>
+                Manage cancelled booking refunds
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="text-center py-10 text-gray-500">
+                Refund management will appear here.
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -30,11 +30,12 @@ public class SecurityConfig {
                                 "/flight/**",
                                 "/hotel",
 
-                                // USER LOGIN / SIGNUP
+                                // USER
                                 "/user/login",
                                 "/user/signup",
+                                "/user/email",
 
-                                // ADMIN APIs / LOGIN
+                                // ADMIN
                                 "/admin/**",
 
                                 // BOOKING
