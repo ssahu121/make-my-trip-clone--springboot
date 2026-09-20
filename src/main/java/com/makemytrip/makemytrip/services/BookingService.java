@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -156,7 +158,7 @@ public class BookingService {
         // Default status
         booking.setBookingStatus("CONFIRMED");
 
-        // Add booking
+        // Add booking to user
         user.getBookings().add(booking);
 
         userRepository.save(user);
@@ -222,6 +224,29 @@ public class BookingService {
 
 
             // =============================================
+            // Validate cancellation reason
+            // =============================================
+
+            List<String> allowedReasons = Arrays.asList(
+                    "Change of plans",
+                    "Found a better price",
+                    "Travel dates changed",
+                    "Flight schedule changed",
+                    "Booked by mistake",
+                    "Personal reasons",
+                    "Other"
+            );
+
+            if (reason == null ||
+                    !allowedReasons.contains(reason)) {
+
+                throw new RuntimeException(
+                        "Invalid cancellation reason"
+                );
+            }
+
+
+            // =============================================
             // Already cancelled
             // =============================================
 
@@ -260,19 +285,18 @@ public class BookingService {
                     LocalDateTime cancellationTime =
                             LocalDateTime.now();
 
-                    long hours =
+                    long minutes =
                             Duration.between(
                                     bookingTime,
                                     cancellationTime
-                            ).toHours();
+                            ).toMinutes();
 
+// =====================================
+// Refund policy
+// Within or equal to 24 hours = 50%
+// =====================================
 
-                    // -------------------------------------
-                    // Refund policy
-                    // Within 24 hours = 50%
-                    // -------------------------------------
-
-                    if (hours >= 0 && hours <= 24) {
+                    if (minutes >= 0 && minutes <= 24 * 60) {
 
                         refundAmount =
                                 booking.getTotalPrice()
@@ -300,6 +324,7 @@ public class BookingService {
                      * Keep refund as 0 for invalid
                      * booking time.
                      */
+
                     refundAmount = 0.0;
                 }
 
@@ -337,9 +362,11 @@ public class BookingService {
                     refundAmount
             );
 
-            booking.setRefundStatus(
-                    "PENDING"
-            );
+            if (refundAmount > 0) {
+                booking.setRefundStatus("PENDING");
+            } else {
+                booking.setRefundStatus("NOT_APPLICABLE");
+            }
 
             booking.setCancelledAt(
                     cancellationTime.toString()
@@ -424,6 +451,12 @@ public class BookingService {
                 "Booking not found: " + bookingId
         );
     }
+
+
+    // =====================================================
+    // UPDATE REFUND STATUS
+    // =====================================================
+
     public Booking updateRefundStatus(
             String userId,
             String bookingId,
@@ -458,7 +491,8 @@ public class BookingService {
 
             if (!"PENDING".equals(status)
                     && !"PROCESSED".equals(status)
-                    && !"COMPLETED".equals(status)) {
+                    && !"COMPLETED".equals(status)
+                    && !"NOT_APPLICABLE".equals(status)) {
 
                 throw new RuntimeException(
                         "Invalid refund status"

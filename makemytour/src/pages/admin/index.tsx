@@ -108,19 +108,19 @@ function UserSearch() {
   const [email, setEmail] = useState("");
   const [user, setUser] = useState<User | null>(null);
 
-const handleSearch = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const data = await getuserbyemail(email);
+    const data = await getuserbyemail(email);
 
-  console.log("FULL USER DATA:", data);
+    console.log("FULL USER DATA:", data);
 
-  const mockUser: User = data;
+    const mockUser: User = data;
 
-  console.log("USER _id:", mockUser._id);
+    console.log("USER _id:", mockUser._id);
 
-  setUser(mockUser);
-};
+    setUser(mockUser);
+  };
 
   return (
     <div className="space-y-4">
@@ -203,7 +203,7 @@ const handleSearch = async (e: React.FormEvent) => {
                             onClick={async () => {
                               try {
                                 await updateRefundStatus(
-                                  user._id,
+                                  user.id!,
                                   booking.bookingId,
                                   "PROCESSED",
                                 );
@@ -224,7 +224,7 @@ const handleSearch = async (e: React.FormEvent) => {
                             onClick={async () => {
                               try {
                                 await updateRefundStatus(
-                                  user._id,
+                                  user.id!,
                                   booking.bookingId,
                                   "COMPLETED",
                                 );
