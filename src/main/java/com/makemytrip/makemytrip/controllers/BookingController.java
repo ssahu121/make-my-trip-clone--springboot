@@ -14,6 +14,7 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
 
+
     // =========================
     // Test Booking Controller
     // =========================
@@ -21,6 +22,7 @@ public class BookingController {
     public String testBookingController() {
         return "Booking Controller Working";
     }
+
 
     // =========================
     // Test Cancel Endpoint
@@ -30,6 +32,7 @@ public class BookingController {
         return "Cancel endpoint working";
     }
 
+
     // =========================
     // Flight Booking
     // =========================
@@ -38,15 +41,18 @@ public class BookingController {
             @RequestParam String userId,
             @RequestParam String flightId,
             @RequestParam int seats,
-            @RequestParam double price) {
+            @RequestParam double price,
+            @RequestParam(required = false) String selectedSeats) {
 
         return bookingService.bookFlight(
                 userId,
                 flightId,
                 seats,
-                price
+                price,
+                selectedSeats
         );
     }
+
 
     // =========================
     // Hotel Booking
@@ -56,15 +62,18 @@ public class BookingController {
             @RequestParam String userId,
             @RequestParam String hotelId,
             @RequestParam int rooms,
-            @RequestParam double price) {
+            @RequestParam double price,
+            @RequestParam(required = false) String roomType) {
 
         return bookingService.bookhotel(
                 userId,
                 hotelId,
                 rooms,
-                price
+                price,
+                roomType
         );
     }
+
 
     // =========================
     // Cancel Booking + Refund
@@ -75,11 +84,12 @@ public class BookingController {
             @RequestParam String bookingId,
             @RequestParam String reason) {
 
-        Users.Booking booking = bookingService.cancelBooking(
-                userId,
-                bookingId,
-                reason
-        );
+        Users.Booking booking =
+                bookingService.cancelBooking(
+                        userId,
+                        bookingId,
+                        reason
+                );
 
         if (booking == null) {
             return ResponseEntity.notFound().build();
@@ -87,6 +97,8 @@ public class BookingController {
 
         return ResponseEntity.ok(booking);
     }
+
+
     // =========================
     // Update Refund Status
     // =========================
@@ -96,16 +108,34 @@ public class BookingController {
             @RequestParam String bookingId,
             @RequestParam String status) {
 
-        Users.Booking booking = bookingService.updateRefundStatus(
-                userId,
-                bookingId,
-                status
-        );
+        Users.Booking booking =
+                bookingService.updateRefundStatus(
+                        userId,
+                        bookingId,
+                        status
+                );
 
         if (booking == null) {
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(booking);
+    }
+
+
+    // =========================
+    // Save User Preferences
+    // =========================
+    @PutMapping("/preferences")
+    public Users savePreferences(
+            @RequestParam String userId,
+            @RequestParam(required = false) String preferredSeats,
+            @RequestParam(required = false) String preferredRoomType) {
+
+        return bookingService.savePreferences(
+                userId,
+                preferredSeats,
+                preferredRoomType
+        );
     }
 }

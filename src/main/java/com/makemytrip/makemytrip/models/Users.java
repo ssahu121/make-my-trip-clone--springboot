@@ -1,23 +1,39 @@
 package com.makemytrip.makemytrip.models;
 
-// import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-// import java.util.ArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
 public class Users {
+
     @Id
     private String _id;
+
     private String firstname;
     private String lastname;
     private String email;
     private String password;
     private String role;
     private String phoneNumber;
-    private List<Booking> bookings= new ArrayList<>();
+
+    private List<Booking> bookings = new ArrayList<>();
+
+
+    // =====================================================
+    // TASK 4 - SAVED USER PREFERENCES
+    // =====================================================
+
+    private List<String> preferredSeats = new ArrayList<>();
+
+    private String preferredRoomType;
+
+
+    // =====================================================
+    // GETTERS AND SETTERS - USER
+    // =====================================================
 
     public String getFirstname() {
         return firstname;
@@ -51,7 +67,6 @@ public class Users {
         return password;
     }
 
-    // public String getId() {return _id;}
     public void setFirstName(String firstname) {
         this.firstname = firstname;
     }
@@ -84,13 +99,52 @@ public class Users {
         this.bookings = bookings;
     }
 
+
+    // =====================================================
+    // TASK 4 - PREFERRED SEATS GETTERS / SETTERS
+    // =====================================================
+
+    public List<String> getPreferredSeats() {
+        return preferredSeats;
+    }
+
+    public void setPreferredSeats(List<String> preferredSeats) {
+        this.preferredSeats = preferredSeats;
+    }
+
+
+    // =====================================================
+    // TASK 4 - PREFERRED ROOM TYPE GETTERS / SETTERS
+    // =====================================================
+
+    public String getPreferredRoomType() {
+        return preferredRoomType;
+    }
+
+    public void setPreferredRoomType(String preferredRoomType) {
+        this.preferredRoomType = preferredRoomType;
+    }
+
+
+    // =====================================================
+    // BOOKING CLASS
+    // =====================================================
+
     public static class Booking {
+
         private String type;
         private String bookingId;
         private String date;
         private int quantity;
         private double totalPrice;
+
         private String bookingStatus = "CONFIRMED";
+
+
+        // =================================================
+        // CANCELLATION / REFUND
+        // =================================================
+
         private String cancellationReason;
         private double refundAmount;
         private String refundStatus;
@@ -98,7 +152,26 @@ public class Users {
         private String cancelledAt;
         private String bookingTime;
 
-        // Getters and Setters
+
+        // =================================================
+        // TASK 4 - FLIGHT SEAT SELECTION
+        // =================================================
+
+        private List<String> selectedSeats =
+                new ArrayList<>();
+
+
+        // =================================================
+        // TASK 4 - HOTEL ROOM SELECTION
+        // =================================================
+
+        private String selectedRoomType;
+
+
+        // =================================================
+        // GETTERS AND SETTERS
+        // =================================================
+
         public String getType() {
             return type;
         }
@@ -106,6 +179,7 @@ public class Users {
         public void setType(String type) {
             this.type = type;
         }
+
 
         public String getBookingId() {
             return bookingId;
@@ -115,6 +189,7 @@ public class Users {
             this.bookingId = bookingId;
         }
 
+
         public String getDate() {
             return date;
         }
@@ -122,6 +197,7 @@ public class Users {
         public void setDate(String date) {
             this.date = date;
         }
+
 
         public int getQuantity() {
             return quantity;
@@ -131,6 +207,7 @@ public class Users {
             this.quantity = quantity;
         }
 
+
         public double getTotalPrice() {
             return totalPrice;
         }
@@ -138,6 +215,7 @@ public class Users {
         public void setTotalPrice(double totalPrice) {
             this.totalPrice = totalPrice;
         }
+
 
         public String getBookingStatus() {
             return bookingStatus;
@@ -147,13 +225,22 @@ public class Users {
             this.bookingStatus = bookingStatus;
         }
 
+
+        // =================================================
+        // CANCELLATION / REFUND GETTERS SETTERS
+        // =================================================
+
         public String getCancellationReason() {
             return cancellationReason;
         }
 
-        public void setCancellationReason(String cancellationReason) {
-            this.cancellationReason = cancellationReason;
+        public void setCancellationReason(
+                String cancellationReason) {
+
+            this.cancellationReason =
+                    cancellationReason;
         }
+
 
         public double getRefundAmount() {
             return refundAmount;
@@ -163,6 +250,7 @@ public class Users {
             this.refundAmount = refundAmount;
         }
 
+
         public String getRefundStatus() {
             return refundStatus;
         }
@@ -171,13 +259,18 @@ public class Users {
             this.refundStatus = refundStatus;
         }
 
+
         public String getRefundExpectedDate() {
             return refundExpectedDate;
         }
 
-        public void setRefundExpectedDate(String refundExpectedDate) {
-            this.refundExpectedDate = refundExpectedDate;
+        public void setRefundExpectedDate(
+                String refundExpectedDate) {
+
+            this.refundExpectedDate =
+                    refundExpectedDate;
         }
+
 
         public String getCancelledAt() {
             return cancelledAt;
@@ -187,6 +280,7 @@ public class Users {
             this.cancelledAt = cancelledAt;
         }
 
+
         public String getBookingTime() {
             return bookingTime;
         }
@@ -195,5 +289,35 @@ public class Users {
             this.bookingTime = bookingTime;
         }
 
+
+        // =================================================
+        // SELECTED FLIGHT SEATS
+        // =================================================
+
+        public List<String> getSelectedSeats() {
+            return selectedSeats;
+        }
+
+        public void setSelectedSeats(
+                List<String> selectedSeats) {
+
+            this.selectedSeats = selectedSeats;
+        }
+
+
+        // =================================================
+        // SELECTED HOTEL ROOM TYPE
+        // =================================================
+
+        public String getSelectedRoomType() {
+            return selectedRoomType;
+        }
+
+        public void setSelectedRoomType(
+                String selectedRoomType) {
+
+            this.selectedRoomType =
+                    selectedRoomType;
+        }
     }
 }

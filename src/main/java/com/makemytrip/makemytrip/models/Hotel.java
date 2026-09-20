@@ -1,18 +1,42 @@
 package com.makemytrip.makemytrip.models;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="hotels")
-    public class Hotel{
+import java.util.ArrayList;
+import java.util.List;
+
+@Document(collection = "hotels")
+public class Hotel {
+
     @Id
     private String _id;
-    private String hotelName ;
+
+    private String hotelName;
     private String location;
     private double pricePerNight;
     private int availableRooms;
     private String amenities;
 
-     // Getters and Setters
+
+    // =====================================================
+    // TASK 4 - ROOM SELECTION
+    // =====================================================
+
+    // Available room types
+    private List<String> roomTypes = new ArrayList<>();
+
+    // Premium / upgraded room types
+    private List<String> premiumRoomTypes = new ArrayList<>();
+
+    // Extra price for premium/upgraded rooms
+    private double premiumRoomPrice = 1000;
+
+
+    // =====================================================
+    // GETTERS AND SETTERS
+    // =====================================================
+
     public String getId() {
         return _id;
     }
@@ -21,13 +45,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
         this._id = id;
     }
 
-    public void setAmenities(String amenities) {
-        this.amenities = amenities;
-    }
-
-    public String getAmenities() {
-        return amenities;
-    }
 
     public String getHotelName() {
         return hotelName;
@@ -37,6 +54,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
         this.hotelName = hotelName;
     }
 
+
     public String getLocation() {
         return location;
     }
@@ -45,13 +63,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
         this.location = location;
     }
 
-    public int getAvailableRooms() {
-        return availableRooms;
-    }
-
-    public void setAvailableRooms(int availableRooms) {
-        this.availableRooms = availableRooms;
-    }
 
     public double getPricePerNight() {
         return pricePerNight;
@@ -61,25 +72,64 @@ import org.springframework.data.mongodb.core.mapping.Document;
         this.pricePerNight = pricePerNight;
     }
 
-//    public String gethotelName() {
-//        // TODO Auto-generated method stub
-//        return hotelName;
-////        throw new UnsupportedOperationException("Unimplemented method 'gethotelName'");
-//    }
-//
-//    public void sethotelName(Object gethotelName) {
-//        // TODO Auto-generated method stub
-//        throw new UnsupportedOperationException("Unimplemented method 'sethotelName'");
-//    }
-//
-//    public String getamenities() {
-//        // TODO Auto-generated method stub
-//        return amenities;
-////        throw new UnsupportedOperationException("Unimplemented method 'getamenities'");
-//    }
-//
-//    public void setamenities(Object getamenities) {
-//        // TODO Auto-generated method stub
-//        throw new UnsupportedOperationException("Unimplemented method 'setamenities'");
-//    }
+
+    public int getAvailableRooms() {
+        return availableRooms;
+    }
+
+    public void setAvailableRooms(int availableRooms) {
+        this.availableRooms = availableRooms;
+    }
+
+
+    public String getAmenities() {
+        return amenities;
+    }
+
+    public void setAmenities(String amenities) {
+        this.amenities = amenities;
+    }
+
+
+    // =====================================================
+    // ROOM TYPE GETTER / SETTER
+    // =====================================================
+
+    public List<String> getRoomTypes() {
+        return roomTypes;
+    }
+
+    public void setRoomTypes(List<String> roomTypes) {
+        this.roomTypes = roomTypes;
+    }
+
+
+    // =====================================================
+    // PREMIUM ROOM TYPE GETTER / SETTER
+    // =====================================================
+
+    public List<String> getPremiumRoomTypes() {
+        return premiumRoomTypes;
+    }
+
+    public void setPremiumRoomTypes(
+            List<String> premiumRoomTypes) {
+
+        this.premiumRoomTypes = premiumRoomTypes;
+    }
+
+
+    // =====================================================
+    // PREMIUM ROOM PRICE GETTER / SETTER
+    // =====================================================
+
+    public double getPremiumRoomPrice() {
+        return premiumRoomPrice;
+    }
+
+    public void setPremiumRoomPrice(
+            double premiumRoomPrice) {
+
+        this.premiumRoomPrice = premiumRoomPrice;
+    }
 }

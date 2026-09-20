@@ -3,6 +3,8 @@ package com.makemytrip.makemytrip.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection="flight")
 public class Flight {
 
@@ -15,6 +17,9 @@ public class Flight {
     private String arrivalTime;
     private double price;
     private int availableSeats;
+    private List<String> bookedSeats;
+    private List<String> premiumSeats;
+    private double premiumSeatPrice;
 
     private double basePrice;
     private String demandLevel;
@@ -206,4 +211,27 @@ public void setPriceLastUpdated(String priceLastUpdated) {
     this.priceLastUpdated = priceLastUpdated;
 }
 
+    public List<String> getBookedSeats() {
+        return bookedSeats;
+    }
+
+    public void setBookedSeats(List<String> bookedSeats) {
+        this.bookedSeats = bookedSeats;
+    }
+
+    public List<String> getPremiumSeats() {
+        return premiumSeats;
+    }
+
+    public void setPremiumSeats(List<String> premiumSeats) {
+        this.premiumSeats = premiumSeats;
+    }
+
+    public double getPremiumSeatPrice() {
+        return premiumSeatPrice;
+    }
+
+    public void setPremiumSeatPrice(double premiumSeatPrice) {
+        this.premiumSeatPrice = premiumSeatPrice;
+    }
 }
