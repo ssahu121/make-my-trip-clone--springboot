@@ -39,7 +39,10 @@ public class SecurityConfig {
                                 "/admin/**",
 
                                 // BOOKING
-                                "/booking/**"
+                                "/booking/**",
+
+                                // REVIEWS
+                                "/reviews/**"
                         ).permitAll()
 
                         .anyRequest().authenticated()

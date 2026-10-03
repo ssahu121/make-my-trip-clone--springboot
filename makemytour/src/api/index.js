@@ -119,11 +119,7 @@ export const cancelBooking = async (
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Cancel booking error:",
-      error
-    );
-
+    console.error("Cancel booking error:", error);
     throw error;
   }
 };
@@ -206,11 +202,7 @@ export const addflight = async (
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Add flight error:",
-      error
-    );
-
+    console.error("Add flight error:", error);
     throw error;
   }
 };
@@ -245,11 +237,7 @@ export const editflight = async (
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Edit flight error:",
-      error
-    );
-
+    console.error("Edit flight error:", error);
     throw error;
   }
 };
@@ -295,11 +283,7 @@ export const addhotel = async (
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Add hotel error:",
-      error
-    );
-
+    console.error("Add hotel error:", error);
     throw error;
   }
 };
@@ -330,11 +314,7 @@ export const edithotel = async (
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Edit hotel error:",
-      error
-    );
-
+    console.error("Edit hotel error:", error);
     throw error;
   }
 };
@@ -512,6 +492,298 @@ export const saveUserPreferences = async (
   } catch (error) {
     console.error(
       "Save preferences error:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+// =====================================================
+// REVIEW APIs
+// =====================================================
+
+// =====================================================
+// CREATE REVIEW
+// =====================================================
+
+export const createReview = async (
+  userId,
+  targetType,
+  targetId,
+  targetName,
+  rating,
+  comment,
+  photos = []
+) => {
+  try {
+    const params = new URLSearchParams();
+
+    params.append("userId", String(userId));
+    params.append("targetType", String(targetType));
+    params.append("targetId", String(targetId));
+
+    if (targetName) {
+      params.append("targetName", String(targetName));
+    }
+
+    params.append("rating", String(rating));
+    params.append("comment", String(comment));
+
+    if (Array.isArray(photos)) {
+      photos.forEach((photo) => {
+        if (photo) {
+          params.append("photos", String(photo));
+        }
+      });
+    }
+
+    const response = await fetch(
+      `${BACKEND_URL}/reviews`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+
+      throw new Error(
+        errorText || "Failed to create review"
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(
+      "Create review error:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+// =====================================================
+// GET REVIEWS
+// =====================================================
+
+/**
+ * Fetch reviews for a hotel or flight.
+ *
+ * @param {string} targetType
+ * @param {string} targetId
+ * @param {string} [sort="newest"]
+ * @param {number|null} [rating=null]
+ */
+
+export const getReviews = async (
+  targetType,
+  targetId,
+  sort = "newest",
+  rating = null
+) => {
+  try {
+    const params = new URLSearchParams();
+
+    params.append(
+      "targetType",
+      String(targetType)
+    );
+
+    params.append(
+      "targetId",
+      String(targetId)
+    );
+
+    if (sort) {
+      params.append(
+        "sort",
+        String(sort)
+      );
+    }
+
+    // IMPORTANT:
+    // Do not use if (rating) because rating can be 1.
+    // Explicit null/undefined check also fixes the TS error.
+    if (
+      rating !== null &&
+      rating !== undefined
+    ) {
+      params.append(
+        "rating",
+        String(rating)
+      );
+    }
+
+    const response = await fetch(
+      `${BACKEND_URL}/reviews?${params.toString()}`
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+
+      throw new Error(
+        errorText || "Failed to fetch reviews"
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(
+      "Get reviews error:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+// =====================================================
+// REPLY TO REVIEW
+// =====================================================
+
+export const replyToReview = async (
+  reviewId,
+  userId,
+  comment
+) => {
+  try {
+    const params = new URLSearchParams();
+
+    params.append(
+      "userId",
+      String(userId)
+    );
+
+    params.append(
+      "comment",
+      String(comment)
+    );
+
+    const response = await fetch(
+      `${BACKEND_URL}/reviews/${encodeURIComponent(
+        reviewId
+      )}/reply`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+
+      throw new Error(
+        errorText || "Failed to reply"
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(
+      "Reply review error:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+// =====================================================
+// MARK REVIEW HELPFUL
+// =====================================================
+
+export const markReviewHelpful = async (
+  reviewId
+) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/reviews/${encodeURIComponent(
+        reviewId
+      )}/helpful`,
+      {
+        method: "PUT",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+
+      throw new Error(
+        errorText ||
+          "Failed to mark review helpful"
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(
+      "Mark review helpful error:",
+      error
+    );
+
+    throw error;
+  }
+};
+
+// =====================================================
+// FLAG REVIEW
+// =====================================================
+
+export const flagReview = async (
+  reviewId,
+  reason
+) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (
+      reason !== null &&
+      reason !== undefined &&
+      String(reason).trim() !== ""
+    ) {
+      params.append(
+        "reason",
+        String(reason)
+      );
+    }
+
+    const response = await fetch(
+      `${BACKEND_URL}/reviews/${encodeURIComponent(
+        reviewId
+      )}/flag`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+
+      throw new Error(
+        errorText || "Failed to flag review"
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(
+      "Flag review error:",
       error
     );
 

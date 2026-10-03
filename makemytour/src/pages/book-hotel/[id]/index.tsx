@@ -16,6 +16,11 @@ import {
   Crown,
   Check,
   RefreshCw,
+  MessageCircle,
+  ThumbsUp,
+  Flag,
+  Send,
+  Upload,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -24,6 +29,11 @@ import {
   gethotels,
   handlehotelbooking,
   saveUserPreferences,
+  getReviews,
+  createReview,
+  replyToReview,
+  markReviewHelpful,
+  flagReview,
 } from "@/api";
 
 interface Hotel {
@@ -37,6 +47,30 @@ interface Hotel {
   roomTypes?: string[];
   premiumRoomTypes?: string[];
   premiumRoomPrice?: number;
+}
+
+interface Review {
+  id: string;
+  targetType: string;
+  targetId: string;
+  targetName?: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  photos?: string[];
+  helpfulCount: number;
+  flagged: boolean;
+  moderationStatus: string;
+  createdAt: string;
+  updatedAt?: string;
+  replies?: {
+    id: string;
+    userId: string;
+    userName: string;
+    comment: string;
+    createdAt: string;
+  }[];
 }
 
 import {
@@ -87,6 +121,32 @@ const BookHotelPage = () => {
   );
 
   const [open, setopem] = useState(false);
+
+  // =====================================================
+  // TASK 5: REVIEW STATES
+  // =====================================================
+
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const [reviewSort, setReviewSort] = useState("newest");
+  const [reviewFilterRating, setReviewFilterRating] =
+    useState<number | null>(null);
+
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+
+  const [replyText, setReplyText] =
+    useState<Record<string, string>>({});
+  const [replyLoading, setReplyLoading] =
+    useState<string | null>(null);
+
+  const [helpfulLoading, setHelpfulLoading] =
+    useState<string | null>(null);
+  const [flagLoading, setFlagLoading] =
+    useState<string | null>(null);
 
   const dispatch = useDispatch();
 
@@ -191,6 +251,37 @@ const BookHotelPage = () => {
       clearInterval(interval);
     };
   }, [id]);
+
+  // =====================================================
+  // FETCH REVIEWS
+  // =====================================================
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    const fetchReviews = async () => {
+      try {
+        setReviewLoading(true);
+
+        const data = await getReviews(
+          "HOTEL",
+          id as string,
+          reviewSort,
+          reviewFilterRating
+        );
+
+        setReviews(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      } finally {
+        setReviewLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [id, reviewSort, reviewFilterRating]);
 
   // =====================================================
   // LOADING
@@ -574,6 +665,207 @@ const BookHotelPage = () => {
       }
     }
   };
+
+  // =====================================================
+  // REVIEW PHOTO UPLOAD
+  // =====================================================
+
+  const handleReviewPhotoChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files || []);
+    const remaining = Math.max(0, 3 - reviewPhotos.length);
+
+    files.slice(0, remaining).forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert(`${file.name} is larger than 2 MB.`);
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setReviewPhotos((previous) => {
+            if (previous.length >= 3) {
+              return previous;
+            }
+            return [...previous, reader.result as string];
+          });
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    e.target.value = "";
+  };
+
+  const removeReviewPhoto = (index: number) => {
+    setReviewPhotos((previous) =>
+      previous.filter((_, photoIndex) => photoIndex !== index)
+    );
+  };
+
+  // =====================================================
+  // SUBMIT REVIEW
+  // =====================================================
+
+  const handleSubmitReview = async () => {
+    if (!user) {
+      alert("Please login to write a review.");
+      return;
+    }
+
+    if (!reviewComment.trim()) {
+      alert("Please write your review.");
+      return;
+    }
+
+    try {
+      setReviewSubmitting(true);
+
+      const newReview = await createReview(
+        user.id,
+        "HOTEL",
+        hotel.id,
+        hotel.hotelName,
+        reviewRating,
+        reviewComment.trim(),
+        reviewPhotos
+      );
+
+      setReviews((previous) => [newReview, ...previous]);
+      setReviewRating(5);
+      setReviewComment("");
+      setReviewPhotos([]);
+
+      alert("Review submitted successfully!");
+    } catch (error: any) {
+      console.error("Review submission error:", error);
+      alert(error?.message || "Failed to submit review.");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  // =====================================================
+  // REPLY TO REVIEW
+  // =====================================================
+
+  const handleReply = async (reviewId: string) => {
+    if (!user) {
+      alert("Please login to reply.");
+      return;
+    }
+
+    const comment = replyText[reviewId]?.trim();
+
+    if (!comment) {
+      alert("Please enter a reply.");
+      return;
+    }
+
+    try {
+      setReplyLoading(reviewId);
+
+      const updatedReview = await replyToReview(
+        reviewId,
+        user.id,
+        comment
+      );
+
+      setReviews((previous) =>
+        previous.map((review) =>
+          review.id === reviewId ? updatedReview : review
+        )
+      );
+
+      setReplyText((previous) => ({
+        ...previous,
+        [reviewId]: "",
+      }));
+    } catch (error: any) {
+      console.error("Reply error:", error);
+      alert(error?.message || "Failed to reply.");
+    } finally {
+      setReplyLoading(null);
+    }
+  };
+
+  // =====================================================
+  // MARK REVIEW HELPFUL
+  // =====================================================
+
+  const handleHelpful = async (reviewId: string) => {
+    try {
+      setHelpfulLoading(reviewId);
+
+      const updatedReview = await markReviewHelpful(reviewId);
+
+      setReviews((previous) =>
+        previous.map((review) =>
+          review.id === reviewId ? updatedReview : review
+        )
+      );
+    } catch (error: any) {
+      console.error("Helpful error:", error);
+      alert(error?.message || "Failed to mark review helpful.");
+    } finally {
+      setHelpfulLoading(null);
+    }
+  };
+
+  // =====================================================
+  // FLAG REVIEW
+  // =====================================================
+
+  const handleFlag = async (reviewId: string) => {
+    if (!user) {
+      alert("Please login to flag a review.");
+      return;
+    }
+
+    const reason = window.prompt(
+      "Why are you flagging this review?"
+    );
+
+    if (reason === null) {
+      return;
+    }
+
+    try {
+      setFlagLoading(reviewId);
+      await flagReview(reviewId, reason.trim());
+
+      setReviews((previous) =>
+        previous.filter((review) => review.id !== reviewId)
+      );
+
+      alert("Review flagged for moderator review.");
+    } catch (error: any) {
+      console.error("Flag error:", error);
+      alert(error?.message || "Failed to flag review.");
+    } finally {
+      setFlagLoading(null);
+    }
+  };
+
+  const reviewCount = reviews.length;
+
+  const averageRating =
+    reviewCount > 0
+      ? (
+          reviews.reduce(
+            (total, review) => total + review.rating,
+            0
+          ) / reviewCount
+        ).toFixed(1)
+      : "0.0";
 
   // =====================================================
   // HOTEL BOOKING DIALOG
@@ -1936,14 +2228,311 @@ const BookHotelPage = () => {
 
                 </div>
 
-                <a
-                  href="#"
+                <button
+                  type="button"
+                  onClick={() =>
+                    document
+                      .getElementById("reviews-section")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                   className="text-blue-500"
                 >
                   All Reviews
-                </a>
+                </button>
 
               </div>
+
+            </div>
+
+            {/* =================================================
+                TASK 5 - REVIEWS & RATINGS
+            ================================================= */}
+
+            <div
+              id="reviews-section"
+              className="bg-white rounded-xl shadow-lg p-6 mt-6"
+            >
+
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold">Reviews & Ratings</h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {reviewCount} review{reviewCount !== 1 ? "s" : ""}
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-3xl font-bold">{averageRating}</div>
+                  <div className="flex justify-end">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-4 h-4 ${
+                          star <= Math.round(Number(averageRating))
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* WRITE REVIEW */}
+
+              <div className="border rounded-xl p-4 mb-6 bg-gray-50">
+                <h3 className="font-bold text-lg mb-4">Write a Review</h3>
+
+                {!user ? (
+                  <p className="text-sm text-gray-500">
+                    Please login to write a review.
+                  </p>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <p className="text-sm font-medium mb-2">Your Rating</p>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewRating(star)}
+                            className="p-0.5"
+                          >
+                            <Star
+                              className={`w-7 h-7 ${
+                                star <= reviewRating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <textarea
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder="Write your detailed review..."
+                      rows={4}
+                      className="w-full border rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+
+                    <div className="mt-4">
+                      <label className="flex items-center gap-2 cursor-pointer w-fit">
+                        <Upload className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          Upload Photos (up to 3)
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={handleReviewPhotoChange}
+                        />
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Maximum 2 MB per image.
+                      </p>
+                    </div>
+
+                    {reviewPhotos.length > 0 && (
+                      <div className="grid grid-cols-3 gap-3 mt-4">
+                        {reviewPhotos.map((photo, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={photo}
+                              alt={`Review photo ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg border"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeReviewPhoto(index)}
+                              className="absolute top-1 right-1 bg-black/70 text-white rounded-full w-6 h-6 text-xs"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <Button
+                      type="button"
+                      className="mt-4"
+                      disabled={reviewSubmitting}
+                      onClick={handleSubmitReview}
+                    >
+                      {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              {/* SORT AND FILTER */}
+
+              <div className="flex flex-col md:flex-row gap-3 mb-5">
+                <select
+                  value={reviewSort}
+                  onChange={(e) => setReviewSort(e.target.value)}
+                  className="border rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="highest">Highest Rated</option>
+                  <option value="helpful">Most Helpful</option>
+                </select>
+
+                <select
+                  value={reviewFilterRating ?? ""}
+                  onChange={(e) =>
+                    setReviewFilterRating(
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
+                  className="border rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="">All Ratings</option>
+                  <option value="5">5 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="2">2 Stars</option>
+                  <option value="1">1 Star</option>
+                </select>
+              </div>
+
+              {/* REVIEW LIST */}
+
+              {reviewLoading ? (
+                <div className="py-8 text-center text-gray-500">
+                  Loading reviews...
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="py-8 text-center border rounded-lg">
+                  <Star className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                  <p className="font-medium">No reviews found</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Be the first person to review this hotel.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border rounded-xl p-4">
+
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold">{review.userName}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`w-4 h-4 ${
+                                    star <= review.rating
+                                      ? "text-yellow-400 fill-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {review.createdAt
+                                ? new Date(review.createdAt).toLocaleDateString()
+                                : ""}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={flagLoading === review.id}
+                          onClick={() => handleFlag(review.id)}
+                          className="text-gray-400 hover:text-red-500"
+                          title="Flag review"
+                        >
+                          <Flag className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <p className="text-gray-700 mt-3 whitespace-pre-wrap">
+                        {review.comment}
+                      </p>
+
+                      {review.photos && review.photos.length > 0 && (
+                        <div className="grid grid-cols-3 gap-3 mt-4">
+                          {review.photos.map((photo, index) => (
+                            <img
+                              key={index}
+                              src={photo}
+                              alt={`Review photo ${index + 1}`}
+                              className="w-full h-28 object-cover rounded-lg border"
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-4 mt-4">
+                        <button
+                          type="button"
+                          disabled={helpfulLoading === review.id}
+                          onClick={() => handleHelpful(review.id)}
+                          className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600"
+                        >
+                          <ThumbsUp className="w-4 h-4" />
+                          Helpful ({review.helpfulCount || 0})
+                        </button>
+
+                        <span className="flex items-center gap-1 text-sm text-gray-500">
+                          <MessageCircle className="w-4 h-4" />
+                          {review.replies?.length || 0} Replies
+                        </span>
+                      </div>
+
+                      {review.replies && review.replies.length > 0 && (
+                        <div className="mt-4 ml-5 border-l-2 pl-4 space-y-3">
+                          {review.replies.map((reply) => (
+                            <div key={reply.id} className="bg-gray-50 rounded-lg p-3">
+                              <p className="font-medium text-sm">
+                                {reply.userName}
+                              </p>
+                              <p className="text-sm text-gray-700 mt-1">
+                                {reply.comment}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {user && (
+                        <div className="flex gap-2 mt-4">
+                          <Input
+                            value={replyText[review.id] || ""}
+                            onChange={(e) =>
+                              setReplyText((previous) => ({
+                                ...previous,
+                                [review.id]: e.target.value,
+                              }))
+                            }
+                            placeholder="Write a reply..."
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            disabled={replyLoading === review.id}
+                            onClick={() => handleReply(review.id)}
+                            title="Reply"
+                          >
+                            <Send className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+
+                    </div>
+                  ))}
+                </div>
+              )}
 
             </div>
 
