@@ -859,9 +859,9 @@ public class BookingService {
             }
 
 
-            // =============================================
+            // ==========================================
             // Validate refund status
-            // =============================================
+            // ==========================================
 
             if (!"PENDING".equals(status)
                     && !"PROCESSED".equals(status)
@@ -880,7 +880,6 @@ public class BookingService {
 
             return booking;
         }
-
         return null;
     }
 }
