@@ -15,9 +15,9 @@ public class BookingController {
     private BookingService bookingService;
 
 
-    // =========================
+    // ========================
     // Test Booking Controller
-    // =========================
+    // ========================
     @GetMapping("/test")
     public String testBookingController() {
         return "Booking Controller Working";
