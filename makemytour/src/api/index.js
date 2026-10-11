@@ -790,3 +790,45 @@ export const flagReview = async (
     throw error;
   }
 };
+// Fetch personalized recommendations
+export const getRecommendations = async (userId) => {
+  const response = await fetch(
+    `http://localhost:8080/recommendations?userId=${encodeURIComponent(userId)}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch recommendations");
+  }
+
+  return response.json();
+};
+
+
+export const submitRecommendationFeedback = async (
+  userId,
+  recommendationId,
+  feedback
+) => {
+  const params = new URLSearchParams({
+    userId,
+    recommendationId,
+    feedback,
+  });
+
+  const response = await fetch(
+    `http://localhost:8080/recommendations/feedback?${params.toString()}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to submit feedback");
+  }
+
+  return response.json();
+};
