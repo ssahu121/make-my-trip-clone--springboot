@@ -52,7 +52,7 @@ public class PriceFreezeService {
             LocalDateTime expiry =
                     LocalDateTime.parse(priceFreeze.getFreezeExpiryTime());
 
-            if (LocalDateTime.now().isAfter(expiry)) {
+            if (!LocalDateTime.now().isBefore(expiry)) {
 
                 priceFreeze.setActive(false);
                 priceFreezeRepository.save(priceFreeze);

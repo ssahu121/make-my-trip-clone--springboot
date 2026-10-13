@@ -7,7 +7,8 @@ import com.makemytrip.makemytrip.models.Hotel;
 import com.makemytrip.makemytrip.repositories.UserRepository;
 import com.makemytrip.makemytrip.repositories.FlightRepository;
 import com.makemytrip.makemytrip.repositories.HotelRepository;
-
+import com.makemytrip.makemytrip.models.PriceFreeze;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,12 @@ public class BookingService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PriceFreezeService priceFreezeService;
+
+    @Autowired
+    private DynamicPricingService dynamicPricingService;
 
     @Autowired
     private FlightRepository flightRepository;
@@ -62,7 +69,17 @@ public class BookingService {
 
         Users user = userOptional.get();
         Flight flight = flightOptional.get();
+// Use the frozen price when a freeze is active.
+        Optional<PriceFreeze> activeFreeze =
+                priceFreezeService.getActiveFreeze(flightId);
 
+        if (activeFreeze.isPresent()) {
+            price = activeFreeze.get().getFrozenPrice();
+        } else {
+            // Otherwise, calculate the current dynamic price on the server.
+            flight = dynamicPricingService.calculateDynamicPrice(flight);
+            price = flight.getPrice();
+        }
 
         // =================================================
         // Initialize seat data
