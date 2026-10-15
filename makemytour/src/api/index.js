@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "https://make-my-trip-clone-springboot-2-0p35.onrender.com";
 
 // =====================================================
 // LOGIN
@@ -30,19 +30,16 @@ export const signup = async (
   lastName,
   email,
   phoneNumber,
-  password
+  password,
 ) => {
   try {
-    const res = await axios.post(
-      `${BACKEND_URL}/user/signup`,
-      {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        password,
-      }
-    );
+    const res = await axios.post(`${BACKEND_URL}/user/signup`, {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+    });
 
     return res.data;
   } catch (error) {
@@ -57,7 +54,7 @@ export const signup = async (
 export const getuserbyemail = async (email) => {
   try {
     const res = await axios.get(
-      `${BACKEND_URL}/user/email?email=${encodeURIComponent(email)}`
+      `${BACKEND_URL}/user/email?email=${encodeURIComponent(email)}`,
     );
 
     return res.data;
@@ -75,7 +72,7 @@ export const editprofile = async (
   firstName,
   lastName,
   email,
-  phoneNumber
+  phoneNumber,
 ) => {
   try {
     const res = await axios.post(
@@ -85,7 +82,7 @@ export const editprofile = async (
         lastName,
         email,
         phoneNumber,
-      }
+      },
     );
 
     return res.data;
@@ -99,23 +96,15 @@ export const editprofile = async (
 // CANCEL BOOKING
 // =====================================================
 
-export const cancelBooking = async (
-  userId,
-  bookingId,
-  reason
-) => {
+export const cancelBooking = async (userId, bookingId, reason) => {
   try {
-    const res = await axios.put(
-      `${BACKEND_URL}/booking/cancel`,
-      null,
-      {
-        params: {
-          userId,
-          bookingId,
-          reason,
-        },
-      }
-    );
+    const res = await axios.put(`${BACKEND_URL}/booking/cancel`, null, {
+      params: {
+        userId,
+        bookingId,
+        reason,
+      },
+    });
 
     return res.data;
   } catch (error) {
@@ -128,30 +117,19 @@ export const cancelBooking = async (
 // UPDATE REFUND STATUS
 // =====================================================
 
-export const updateRefundStatus = async (
-  userId,
-  bookingId,
-  status
-) => {
+export const updateRefundStatus = async (userId, bookingId, status) => {
   try {
-    const res = await axios.put(
-      `${BACKEND_URL}/booking/refund-status`,
-      null,
-      {
-        params: {
-          userId,
-          bookingId,
-          status,
-        },
-      }
-    );
+    const res = await axios.put(`${BACKEND_URL}/booking/refund-status`, null, {
+      params: {
+        userId,
+        bookingId,
+        status,
+      },
+    });
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Refund status update error:",
-      error
-    );
+    console.error("Refund status update error:", error);
 
     throw error;
   }
@@ -163,9 +141,7 @@ export const updateRefundStatus = async (
 
 export const getflight = async () => {
   try {
-    const res = await axios.get(
-      `${BACKEND_URL}/flight`
-    );
+    const res = await axios.get(`${BACKEND_URL}/flight`);
 
     return res.data;
   } catch (error) {
@@ -184,21 +160,18 @@ export const addflight = async (
   departureTime,
   arrivalTime,
   price,
-  availableSeats
+  availableSeats,
 ) => {
   try {
-    const res = await axios.post(
-      `${BACKEND_URL}/admin/flight`,
-      {
-        flightName,
-        from,
-        to,
-        departureTime,
-        arrivalTime,
-        price,
-        availableSeats,
-      }
-    );
+    const res = await axios.post(`${BACKEND_URL}/admin/flight`, {
+      flightName,
+      from,
+      to,
+      departureTime,
+      arrivalTime,
+      price,
+      availableSeats,
+    });
 
     return res.data;
   } catch (error) {
@@ -219,21 +192,18 @@ export const editflight = async (
   departureTime,
   arrivalTime,
   price,
-  availableSeats
+  availableSeats,
 ) => {
   try {
-    const res = await axios.put(
-      `${BACKEND_URL}/admin/flight/${id}`,
-      {
-        flightName,
-        from,
-        to,
-        departureTime,
-        arrivalTime,
-        price,
-        availableSeats,
-      }
-    );
+    const res = await axios.put(`${BACKEND_URL}/admin/flight/${id}`, {
+      flightName,
+      from,
+      to,
+      departureTime,
+      arrivalTime,
+      price,
+      availableSeats,
+    });
 
     return res.data;
   } catch (error) {
@@ -248,9 +218,7 @@ export const editflight = async (
 
 export const gethotels = async () => {
   try {
-    const res = await axios.get(
-      `${BACKEND_URL}/hotel`
-    );
+    const res = await axios.get(`${BACKEND_URL}/hotel`);
 
     return res.data;
   } catch (error) {
@@ -267,19 +235,16 @@ export const addhotel = async (
   location,
   pricePerNight,
   availableRooms,
-  amenities
+  amenities,
 ) => {
   try {
-    const res = await axios.post(
-      `${BACKEND_URL}/admin/hotel`,
-      {
-        hotelName,
-        location,
-        pricePerNight,
-        availableRooms,
-        amenities,
-      }
-    );
+    const res = await axios.post(`${BACKEND_URL}/admin/hotel`, {
+      hotelName,
+      location,
+      pricePerNight,
+      availableRooms,
+      amenities,
+    });
 
     return res.data;
   } catch (error) {
@@ -298,19 +263,16 @@ export const edithotel = async (
   location,
   pricePerNight,
   availableRooms,
-  amenities
+  amenities,
 ) => {
   try {
-    const res = await axios.put(
-      `${BACKEND_URL}/admin/hotel/${id}`,
-      {
-        hotelName,
-        location,
-        pricePerNight,
-        availableRooms,
-        amenities,
-      }
-    );
+    const res = await axios.put(`${BACKEND_URL}/admin/hotel/${id}`, {
+      hotelName,
+      location,
+      pricePerNight,
+      availableRooms,
+      amenities,
+    });
 
     return res.data;
   } catch (error) {
@@ -328,7 +290,7 @@ export const handleflightbooking = async (
   flightId,
   seats,
   price,
-  selectedSeats
+  selectedSeats,
 ) => {
   try {
     const url =
@@ -337,18 +299,13 @@ export const handleflightbooking = async (
       `&flightId=${encodeURIComponent(flightId)}` +
       `&seats=${encodeURIComponent(seats)}` +
       `&price=${encodeURIComponent(price)}` +
-      `&selectedSeats=${encodeURIComponent(
-        selectedSeats || ""
-      )}`;
+      `&selectedSeats=${encodeURIComponent(selectedSeats || "")}`;
 
     const res = await axios.post(url);
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Flight booking error:",
-      error
-    );
+    console.error("Flight booking error:", error);
 
     throw error;
   }
@@ -363,7 +320,7 @@ export const handlehotelbooking = async (
   hotelId,
   rooms,
   price,
-  roomType
+  roomType,
 ) => {
   try {
     const url =
@@ -372,18 +329,13 @@ export const handlehotelbooking = async (
       `&hotelId=${encodeURIComponent(hotelId)}` +
       `&rooms=${encodeURIComponent(rooms)}` +
       `&price=${encodeURIComponent(price)}` +
-      `&roomType=${encodeURIComponent(
-        roomType || "Standard"
-      )}`;
+      `&roomType=${encodeURIComponent(roomType || "Standard")}`;
 
     const res = await axios.post(url);
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Hotel booking error:",
-      error
-    );
+    console.error("Hotel booking error:", error);
 
     throw error;
   }
@@ -395,9 +347,7 @@ export const handlehotelbooking = async (
 
 export const trackFlight = async (id) => {
   try {
-    const res = await axios.put(
-      `${BACKEND_URL}/flight/${id}/track`
-    );
+    const res = await axios.put(`${BACKEND_URL}/flight/${id}/track`);
 
     return res.data;
   } catch (error) {
@@ -411,9 +361,7 @@ export const trackFlight = async (id) => {
 
 export const getTrackedFlights = async () => {
   try {
-    const response = await axios.get(
-      `${BACKEND_URL}/flight/tracked`
-    );
+    const response = await axios.get(`${BACKEND_URL}/flight/tracked`);
 
     return response.data;
   } catch (error) {
@@ -428,15 +376,12 @@ export const getTrackedFlights = async () => {
 export const getPriceHistory = async (id) => {
   try {
     const response = await axios.get(
-      `${BACKEND_URL}/flight/${id}/price-history`
+      `${BACKEND_URL}/flight/${id}/price-history`,
     );
 
     return response.data;
   } catch (error) {
-    console.error(
-      "Error fetching price history:",
-      error
-    );
+    console.error("Error fetching price history:", error);
 
     throw error;
   }
@@ -446,21 +391,15 @@ export const getPriceHistory = async (id) => {
 // FREEZE PRICE
 // =====================================================
 
-export const freezePrice = async (
-  flightId,
-  minutes = 15
-) => {
+export const freezePrice = async (flightId, minutes = 15) => {
   try {
     const response = await axios.post(
-      `${BACKEND_URL}/flight/${flightId}/price-freeze?minutes=${minutes}`
+      `${BACKEND_URL}/flight/${flightId}/price-freeze?minutes=${minutes}`,
     );
 
     return response.data;
   } catch (error) {
-    console.error(
-      "Error freezing price:",
-      error
-    );
+    console.error("Error freezing price:", error);
 
     throw error;
   }
@@ -473,27 +412,20 @@ export const freezePrice = async (
 export const saveUserPreferences = async (
   userId,
   preferredSeats = "",
-  preferredRoomType = ""
+  preferredRoomType = "",
 ) => {
   try {
     const url =
       `${BACKEND_URL}/booking/preferences` +
       `?userId=${encodeURIComponent(userId)}` +
-      `&preferredSeats=${encodeURIComponent(
-        preferredSeats
-      )}` +
-      `&preferredRoomType=${encodeURIComponent(
-        preferredRoomType
-      )}`;
+      `&preferredSeats=${encodeURIComponent(preferredSeats)}` +
+      `&preferredRoomType=${encodeURIComponent(preferredRoomType)}`;
 
     const res = await axios.put(url);
 
     return res.data;
   } catch (error) {
-    console.error(
-      "Save preferences error:",
-      error
-    );
+    console.error("Save preferences error:", error);
 
     throw error;
   }
@@ -514,7 +446,7 @@ export const createReview = async (
   targetName,
   rating,
   comment,
-  photos = []
+  photos = [],
 ) => {
   try {
     const params = new URLSearchParams();
@@ -538,32 +470,23 @@ export const createReview = async (
       });
     }
 
-    const response = await fetch(
-      `${BACKEND_URL}/reviews`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded",
-        },
-        body: params.toString(),
-      }
-    );
+    const response = await fetch(`${BACKEND_URL}/reviews`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString(),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
 
-      throw new Error(
-        errorText || "Failed to create review"
-      );
+      throw new Error(errorText || "Failed to create review");
     }
 
     return response.json();
   } catch (error) {
-    console.error(
-      "Create review error:",
-      error
-    );
+    console.error("Create review error:", error);
 
     throw error;
   }
@@ -586,59 +509,37 @@ export const getReviews = async (
   targetType,
   targetId,
   sort = "newest",
-  rating = null
+  rating = null,
 ) => {
   try {
     const params = new URLSearchParams();
 
-    params.append(
-      "targetType",
-      String(targetType)
-    );
+    params.append("targetType", String(targetType));
 
-    params.append(
-      "targetId",
-      String(targetId)
-    );
+    params.append("targetId", String(targetId));
 
     if (sort) {
-      params.append(
-        "sort",
-        String(sort)
-      );
+      params.append("sort", String(sort));
     }
 
     // IMPORTANT:
     // Do not use if (rating) because rating can be 1.
     // Explicit null/undefined check also fixes the TS error.
-    if (
-      rating !== null &&
-      rating !== undefined
-    ) {
-      params.append(
-        "rating",
-        String(rating)
-      );
+    if (rating !== null && rating !== undefined) {
+      params.append("rating", String(rating));
     }
 
-    const response = await fetch(
-      `${BACKEND_URL}/reviews?${params.toString()}`
-    );
+    const response = await fetch(`${BACKEND_URL}/reviews?${params.toString()}`);
 
     if (!response.ok) {
       const errorText = await response.text();
 
-      throw new Error(
-        errorText || "Failed to fetch reviews"
-      );
+      throw new Error(errorText || "Failed to fetch reviews");
     }
 
     return response.json();
   } catch (error) {
-    console.error(
-      "Get reviews error:",
-      error
-    );
+    console.error("Get reviews error:", error);
 
     throw error;
   }
@@ -648,52 +549,34 @@ export const getReviews = async (
 // REPLY TO REVIEW
 // =====================================================
 
-export const replyToReview = async (
-  reviewId,
-  userId,
-  comment
-) => {
+export const replyToReview = async (reviewId, userId, comment) => {
   try {
     const params = new URLSearchParams();
 
-    params.append(
-      "userId",
-      String(userId)
-    );
+    params.append("userId", String(userId));
 
-    params.append(
-      "comment",
-      String(comment)
-    );
+    params.append("comment", String(comment));
 
     const response = await fetch(
-      `${BACKEND_URL}/reviews/${encodeURIComponent(
-        reviewId
-      )}/reply`,
+      `${BACKEND_URL}/reviews/${encodeURIComponent(reviewId)}/reply`,
       {
         method: "POST",
         headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: params.toString(),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
 
-      throw new Error(
-        errorText || "Failed to reply"
-      );
+      throw new Error(errorText || "Failed to reply");
     }
 
     return response.json();
   } catch (error) {
-    console.error(
-      "Reply review error:",
-      error
-    );
+    console.error("Reply review error:", error);
 
     throw error;
   }
@@ -703,34 +586,24 @@ export const replyToReview = async (
 // MARK REVIEW HELPFUL
 // =====================================================
 
-export const markReviewHelpful = async (
-  reviewId
-) => {
+export const markReviewHelpful = async (reviewId) => {
   try {
     const response = await fetch(
-      `${BACKEND_URL}/reviews/${encodeURIComponent(
-        reviewId
-      )}/helpful`,
+      `${BACKEND_URL}/reviews/${encodeURIComponent(reviewId)}/helpful`,
       {
         method: "PUT",
-      }
+      },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
 
-      throw new Error(
-        errorText ||
-          "Failed to mark review helpful"
-      );
+      throw new Error(errorText || "Failed to mark review helpful");
     }
 
     return response.json();
   } catch (error) {
-    console.error(
-      "Mark review helpful error:",
-      error
-    );
+    console.error("Mark review helpful error:", error);
 
     throw error;
   }
@@ -740,10 +613,7 @@ export const markReviewHelpful = async (
 // FLAG REVIEW
 // =====================================================
 
-export const flagReview = async (
-  reviewId,
-  reason
-) => {
+export const flagReview = async (reviewId, reason) => {
   try {
     const params = new URLSearchParams();
 
@@ -752,40 +622,29 @@ export const flagReview = async (
       reason !== undefined &&
       String(reason).trim() !== ""
     ) {
-      params.append(
-        "reason",
-        String(reason)
-      );
+      params.append("reason", String(reason));
     }
 
     const response = await fetch(
-      `${BACKEND_URL}/reviews/${encodeURIComponent(
-        reviewId
-      )}/flag`,
+      `${BACKEND_URL}/reviews/${encodeURIComponent(reviewId)}/flag`,
       {
         method: "PUT",
         headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: params.toString(),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
 
-      throw new Error(
-        errorText || "Failed to flag review"
-      );
+      throw new Error(errorText || "Failed to flag review");
     }
 
     return response.json();
   } catch (error) {
-    console.error(
-      "Flag review error:",
-      error
-    );
+    console.error("Flag review error:", error);
 
     throw error;
   }
@@ -793,7 +652,7 @@ export const flagReview = async (
 // Fetch personalized recommendations
 export const getRecommendations = async (userId) => {
   const response = await fetch(
-    `http://localhost:8080/recommendations?userId=${encodeURIComponent(userId)}`
+    `http://localhost:8080/recommendations?userId=${encodeURIComponent(userId)}`,
   );
 
   if (!response.ok) {
@@ -803,11 +662,10 @@ export const getRecommendations = async (userId) => {
   return response.json();
 };
 
-
 export const submitRecommendationFeedback = async (
   userId,
   recommendationId,
-  feedback
+  feedback,
 ) => {
   const params = new URLSearchParams({
     userId,
@@ -822,7 +680,7 @@ export const submitRecommendationFeedback = async (
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {

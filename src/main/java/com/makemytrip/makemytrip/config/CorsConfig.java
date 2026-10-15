@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:3000")
+                List.of("https://make-my-trip-clone-springboot-5-nyg9.onrender.com")
         );
 
         configuration.setAllowedMethods(
